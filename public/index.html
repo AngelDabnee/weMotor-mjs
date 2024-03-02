@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Control de Motor con Flask</title>
+    <style>
+        .disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        #izquierda, #derecha, #pausa {
+            width: 300px;
+            height: 300px;
+            cursor: pointer;
+        }
+        #reloj {
+            font-size: 4em;
+            text-align: center;
+        }
+        #tituloMotor {
+            text-align: center;
+        }
+        #contenedor {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        #t2{
+            text-align: center;
+            font-size: 4em;
+        }
+        body{
+            background-image:url("./static/auto.png");
+            background-size: cover;
+        }
+        
+    </style>
+    <script>
+        function enviarComando(direccion) {
+            fetch("/" + direccion).then(() => {
+            // Habilitar todos los botones
+            document.getElementById("izquierda").disabled = false;
+            document.getElementById("pausa").disabled = false;
+            document.getElementById("derecha").disabled = false;
+
+            // Deshabilitar el botón que fue presionado
+            document.getElementById(direccion).disabled = true;
+            });
+
+            switch(direccion) {
+                case 'izquierda':
+                    document.getElementById('izquierda').classList.add('disabled');
+                    document.getElementById('derecha').classList.remove('disabled');
+                    document.getElementById('pausa').classList.remove('disabled');
+                    break;
+                case 'derecha':
+                    document.getElementById('derecha').classList.add('disabled');
+                    document.getElementById('izquierda').classList.remove('disabled');
+                    document.getElementById('pausa').classList.remove('disabled');
+                    break;
+                case 'pausa':
+                    document.getElementById('pausa').classList.add('disabled');
+                    document.getElementById('izquierda').classList.remove('disabled');
+                    document.getElementById('derecha').classList.remove('disabled');
+                    break;
+            }
+            document.getElementById('t2').innerHTML = direccion;
+            var audio = document.getElementById("audio");
+            audio.play();
+        }
+
+        // Función para actualizar el reloj
+        function actualizarReloj() {
+            const ahora = new Date();
+            document.getElementById("reloj").innerHTML = ahora.toLocaleTimeString();
+            setTimeout(actualizarReloj, 1000);
+        }
+    </script>
+</head>
+<body onload="actualizarReloj()">
+    <h1 id="tituloMotor">Control del Motor</h1>
+    <p id="reloj"></p>
+    <div id="contenedor">
+        <img id="izquierda" src="./static/izquierda.png" onclick="enviarComando('izquierda')" alt="Izquierda">
+        <img id="pausa" src="./static/paro-removebg-preview.png" onclick="enviarComando('parar')" alt="Pausa" class="disabled">
+        <img id="derecha" src="./static/imagenDerechaSinFondo.png" onclick="enviarComando('derecha')" alt="Derecha">
+    </div>
+    <h2 id = "t2"></h2>
+    <audio id = "audio" src="./static/autoincreible.m4a"></audio>
+</body>
+</html>
